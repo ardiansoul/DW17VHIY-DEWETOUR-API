@@ -9,9 +9,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       trip.hasMany(models.transaction, { as: "transactions" });
-      trip.belongsTo(models.transaction, {
+      trip.belongsTo(models.country, {
         foreignKey: "countryId",
-        as: "transactions",
+        as: "country",
       });
     }
   }

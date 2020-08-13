@@ -4,6 +4,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert("trips", [
       {
+        id: 1,
         title: "6D/4M Fun Tassie Vacation + Sydney",
         countryId: 1,
         accommodation: "Hotel 4 Nights",
@@ -20,6 +21,7 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
+        id: 2,
         title: "6D/4M Exciting Summer in South Korea",
         countryId: 2,
         accommodation: "Hotel 4 Nights",
@@ -36,6 +38,7 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
+        id: 3,
         title: "6D/4M Wonderful Autum in Japan",
         countryId: 4,
         accommodation: "Hotel 6 Nights",

@@ -4,6 +4,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert("transactions", [
       {
+        id: 1,
         counterQty: 2,
         total: 247960000,
         status: "Waiting Payment",
