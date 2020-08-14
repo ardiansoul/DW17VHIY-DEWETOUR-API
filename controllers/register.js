@@ -8,20 +8,20 @@ exports.register = async (req, res) => {
     const { error } = await registerValidator(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const { fullName, email, password, phone, address } = req.body;
+    // const { fullName, email, password, phone, address } = req.body;
 
-    const EmailExist = await user.findOne({ where: { email } });
-    if (EmailExist) return res.status(400).send("email already exist");
+    const EmailExist = await user.findOne({ where: { email: req.body.email } });
+    if (EmailExist)
+      return res.status(400).send({ message: "email already exist" });
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
     const User = await user.create({
-      fullName,
-      email,
+      fullName: req.body.fullName,
+      email: req.body.email,
       password: hashedPassword,
-      phone,
-      address,
+      phone: req.body.phone,
+      address: req.body.address,
     });
 
     const token = jwt.sign(
@@ -40,7 +40,7 @@ exports.register = async (req, res) => {
         },
       });
     } catch (err) {
-      res.status(400).send(err);
+      res.status(400).send({ error: err }, err);
     }
   } catch (err) {
     res.status(400).send({ error: err }, err);
