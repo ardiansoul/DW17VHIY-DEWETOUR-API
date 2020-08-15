@@ -2,21 +2,16 @@ const { country } = require("../models");
 
 exports.readAllCountry = async (req, res) => {
   try {
-    // const name = req.query.name;
-    // const condition = name ? { country: { [country.name]: `${name}` } } : null;
     const countries = await country.findAll({
-      //   where: {
-      //     condition,
-      //   },
-
-      // include: {
-      //   model: trip,
-      //   as: "trips",
-      // },
       attributes: {
         exclude: ["createdAt", "updatedAt"],
       },
     });
+
+    if (!countries)
+      return res.status(400).send({
+        message: "country is not exist",
+      });
 
     res.status(200).send({
       message: "countries successfully loaded",
@@ -32,17 +27,22 @@ exports.readCountry = async (req, res) => {
   const id = req.params.id;
 
   try {
-    await findcountry.findOne({
+    const readcountry = await country.findOne({
       where: {
         id: id,
       },
     });
 
+    if (!readcountry)
+      return res.status(400).send({
+        message: "trip is not exist",
+      });
+
     res.status(200).send({
       message: "country successfully loaded",
       data: {
-        id: findcountry.id,
-        name: findcountry.name,
+        id: readcountry.id,
+        name: readcountry.name,
       },
     });
   } catch (err) {

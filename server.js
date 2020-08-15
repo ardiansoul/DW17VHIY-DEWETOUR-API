@@ -17,6 +17,7 @@ const loginRouter = require("./routes/loginRouter");
 const registerRouter = require("./routes/registerRouter");
 const userRouter = require("./routes/userRouter");
 const countryRouter = require("./routes/countryRouter");
+const tripRouter = require("./routes/tripRouter");
 
 app.use(bodyParser.json());
 
@@ -28,6 +29,7 @@ app.use("/api/v1", loginRouter);
 app.use("/api/v1", registerRouter);
 app.use("/api/v1", userRouter);
 app.use("/api/v1", countryRouter);
+app.use("/api/v1", tripRouter);
 
 app.listen(process.env.PORT || 5000, () => {
   console.log(`server running`);
