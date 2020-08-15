@@ -1,5 +1,5 @@
 const { user } = require("../models");
-const password = user.password;
+// const password = user.password;
 // const user = require("../models/user");
 const { loginValidator } = require("../middleware/validation");
 const bcrypt = require("bcryptjs");
@@ -17,24 +17,22 @@ exports.login = async (req, res) => {
         message: "username is not invalid",
       });
 
-    const validPass = await bcrypt.compare(req.body.password, password);
+    const validPass = await bcrypt.compare(
+      req.body.password,
+      validEmail.password
+    );
     if (!validPass)
       return res.status(400).send({
         message: "password is not invalid",
       });
     const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY);
-    res.header("auth-token", token).send(token);
-
-    res.status(200).send({
-      message: user.email,
-      token,
+    res.header("x-access-token", token).send({
+      message: "you are logged in",
+      data: {
+        email: validEmail.email,
+        accessToken: token,
+      },
     });
-
-    // const user = await User.findOne({email: req.body.email});
-    // if(!user) return res.status(400).send('email already exists');
-
-    // const validPass = await bcrypt.compare(req.body.password, user.password);
-    // if(!validPass) return res.status(400).send('invalid password');
   } catch (err) {
     res.status(500).send(
       {

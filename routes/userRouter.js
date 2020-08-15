@@ -1,6 +1,8 @@
 const router = require("express").Router();
-const { findAll } = require("../controllers/user");
+const { readAllUser, deleteUser } = require("../controllers/user");
 
-router.get("/user", findAll);
+router.get("/user", readAllUser);
+
+router.delete("/user/:id", deleteUser);
 
 module.exports = router;

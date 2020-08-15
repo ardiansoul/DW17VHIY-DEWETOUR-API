@@ -1,15 +1,40 @@
 const { user } = require("../models");
 
-exports.findAll = async (req, res) => {
+exports.readAllUser = async (req, res) => {
   try {
-    const users = await user.findAll();
+    const users = await user.findAll({
+      attributes: {
+        exclude: ["createdAt", "updateAt"],
+      },
+    });
     res.status(200).send({
       message: "users successfully loaded",
-      users,
+      data: {
+        users,
+      },
     });
   } catch (err) {
     res.status(400).send({ error: err }, err);
   }
 };
 
-exports.delete = (req, res) => {};
+exports.deleteUser = async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    await user.destroy({
+      where: {
+        id: id,
+      },
+    });
+
+    res.status(200).send({
+      message: "user seccessfully deleted",
+      data: {
+        id: id,
+      },
+    });
+  } catch (err) {
+    res.status(400).send({ error: err }, err);
+  }
+};

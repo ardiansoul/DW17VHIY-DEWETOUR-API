@@ -16,6 +16,7 @@ db.sequelize.sync({ force: true }).then(() => {
 const loginRouter = require("./routes/loginRouter");
 const registerRouter = require("./routes/registerRouter");
 const userRouter = require("./routes/userRouter");
+const countryRouter = require("./routes/countryRouter");
 
 app.use(bodyParser.json());
 
@@ -26,6 +27,7 @@ app.get("/", (req, res) => {
 app.use("/api/v1", loginRouter);
 app.use("/api/v1", registerRouter);
 app.use("/api/v1", userRouter);
+app.use("/api/v1", countryRouter);
 
 app.listen(process.env.PORT || 5000, () => {
   console.log(`server running`);
