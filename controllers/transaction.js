@@ -4,7 +4,7 @@ exports.readAllTransaction = async (req, res) => {
   try {
     const data = await transaction.findAll({
       attributes: {
-        exclude: ["createdAt", "updatedAt"],
+        exclude: ["tripId", "userId", "createdAt", "updatedAt"],
       },
       include: [
         {
@@ -13,14 +13,14 @@ exports.readAllTransaction = async (req, res) => {
           include: [
             {
               model: country,
-              as: country,
+              as: "country",
               attributes: {
                 exclude: ["createdAt", "updatedAt"],
               },
             },
           ],
           attributes: {
-            exclude: ["createdAt", "updatedAt"],
+            exclude: ["countryId", "createdAt", "updatedAt"],
           },
         },
       ],
@@ -34,7 +34,14 @@ exports.readAllTransaction = async (req, res) => {
       message: "Transaction successfully loaded",
       data,
     });
-  } catch (err) {}
+  } catch (err) {
+    res.status(400).send(
+      {
+        error: err,
+      },
+      err
+    );
+  }
 };
 
 exports.readTransaction = async (req, res) => {
@@ -44,6 +51,9 @@ exports.readTransaction = async (req, res) => {
     const data = await transaction.findOne({
       where: {
         id: id,
+      },
+      attributes: {
+        exclude: ["tripId", "userId", "createdAt", "updatedAt"],
       },
       include: {
         model: trip,
@@ -56,11 +66,8 @@ exports.readTransaction = async (req, res) => {
           },
         },
         attributes: {
-          exclude: ["createdAt", "updatedAt"],
+          exclude: ["countryId", "createdAt", "updatedAt"],
         },
-      },
-      attributes: {
-        exclude: ["createdAt", "updatedAt"],
       },
     });
 
@@ -253,7 +260,7 @@ exports.deleteTransaction = async (req, res) => {
           as: "trips",
           include: {
             model: country,
-            as: country,
+            as: "country",
             attributes: {
               exclude: ["createdAt", "updatedAt"],
             },
