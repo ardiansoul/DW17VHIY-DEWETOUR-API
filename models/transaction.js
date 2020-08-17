@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   transaction.init(
     {
-      countryQty: DataTypes.INTEGER,
+      counterQty: DataTypes.INTEGER,
       total: DataTypes.INTEGER,
       status: DataTypes.STRING,
       attachment: DataTypes.STRING,
