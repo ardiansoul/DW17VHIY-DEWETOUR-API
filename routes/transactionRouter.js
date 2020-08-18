@@ -8,10 +8,9 @@ const {
 } = require("../controllers/transaction");
 const { authenticated } = require("../middleware/auth");
 
-router.get("/transaction", readAllTransaction);
-router.get("/transaction/:id", readTransaction);
+router.get("/transaction", authenticated, readAllTransaction);
+router.get("/transaction/:id", authenticated, readTransaction);
 router.post("/transaction", authenticated, createTransaction);
 router.patch("/transaction/:id", authenticated, updateTransaction);
-router.delete("/transaction/:id", authenticated, deleteTransaction);
 
 module.exports = router;

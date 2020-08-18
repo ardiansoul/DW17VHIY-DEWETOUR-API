@@ -40,9 +40,9 @@ exports.register = async (req, res) => {
         },
       });
     } catch (err) {
-      res.status(400).send({ error: err }, err);
+      res.status(400).send({ error: "account created failed" });
     }
   } catch (err) {
-    res.status(400).send({ error: err }, err);
+    res.status(500).send({ error: err }, err);
   }
 };

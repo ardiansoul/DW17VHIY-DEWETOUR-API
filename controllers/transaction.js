@@ -1,4 +1,5 @@
-const { country, trip, transaction } = require("../models");
+const { user, country, trip, transaction } = require("../models");
+const { transactionValidator } = require("../middleware/validation");
 
 exports.readAllTransaction = async (req, res) => {
   try {
@@ -23,6 +24,13 @@ exports.readAllTransaction = async (req, res) => {
             exclude: ["countryId", "createdAt", "updatedAt"],
           },
         },
+        {
+          model: user,
+          as: "users",
+          attributes: {
+            exclude: ["password", "createdAt", "updatedAt"],
+          },
+        },
       ],
     });
     if (data == 0)
@@ -35,7 +43,7 @@ exports.readAllTransaction = async (req, res) => {
       data,
     });
   } catch (err) {
-    res.status(400).send(
+    res.status(500).send(
       {
         error: err,
       },
@@ -55,20 +63,31 @@ exports.readTransaction = async (req, res) => {
       attributes: {
         exclude: ["tripId", "userId", "createdAt", "updatedAt"],
       },
-      include: {
-        model: trip,
-        as: "trips",
-        include: {
-          model: country,
-          as: "country",
+      include: [
+        {
+          model: trip,
+          as: "trips",
+          include: [
+            {
+              model: country,
+              as: "country",
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
+            },
+          ],
           attributes: {
-            exclude: ["createdAt", "updatedAt"],
+            exclude: ["countryId", "createdAt", "updatedAt"],
           },
         },
-        attributes: {
-          exclude: ["countryId", "createdAt", "updatedAt"],
+        {
+          model: user,
+          as: "users",
+          attributes: {
+            exclude: ["password", "createdAt", "updatedAt"],
+          },
         },
-      },
+      ],
     });
 
     if (!data)
@@ -78,35 +97,17 @@ exports.readTransaction = async (req, res) => {
 
     res.status(200).send({
       message: "transaction successfully loaded",
-      data: {
-        id: data.id,
-        counterQty: data.counterQty,
-        total: data.total,
-        status: data.status,
-        attachment: data.attachment,
-        trip: {
-          id: data.trips.id,
-          title: data.trips.title,
-          country: data.trips.country,
-          accommodation: data.trips.accommodation,
-          transportation: data.trips.transportation,
-          eat: data.trips.eat,
-          day: data.trips.day,
-          night: data.trips.night,
-          dateTrip: data.trips.dateTrip,
-          price: data.trips.price,
-          quota: data.trips.quota,
-          description: data.trips.description,
-          image: data.trips.image,
-        },
-      },
+      data,
     });
   } catch (err) {
-    res.status(400).send({ error: err }, err);
+    res.status(500).send({ error: err }, err);
   }
 };
 exports.createTransaction = async (req, res) => {
   try {
+    const { error } = transactionValidator(req.body);
+    if (error) return res.status(400).send({ error: error.details[0].message });
+
     const { counterQty, total, status, attachment, tripId, userId } = req.body;
 
     const data = await transaction
@@ -123,50 +124,40 @@ exports.createTransaction = async (req, res) => {
           where: {
             id: result.id,
           },
-          include: {
-            model: trip,
-            as: "trips",
-            include: {
-              model: country,
-              as: "country",
+          include: [
+            {
+              model: trip,
+              as: "trips",
+              include: [
+                {
+                  model: country,
+                  as: "country",
+                  attributes: {
+                    exclude: ["createdAt", "updatedAt"],
+                  },
+                },
+              ],
               attributes: {
-                exclude: ["createdAt", "updatedAt"],
+                exclude: ["countryId", "createdAt", "updatedAt"],
               },
             },
-            attributes: {
-              exclude: ["createdAt", "updatedAt"],
+            {
+              model: user,
+              as: "users",
+              attributes: {
+                exclude: ["password", "createdAt", "updatedAt"],
+              },
             },
-          },
+          ],
           attributes: {
-            exclude: ["createdAt", "updatedAt"],
+            exclude: ["tripId", "userId", "createdAt", "updatedAt"],
           },
         });
       });
 
     res.status(201).send({
       message: "transaction successfully created",
-      data: {
-        id: data.id,
-        counterQty: data.counterQty,
-        total: data.total,
-        status: data.status,
-        attachment: data.attachment,
-        trip: {
-          id: data.trips.id,
-          title: data.trips.title,
-          country: data.trips.country,
-          accommodation: data.trips.accommodation,
-          transportation: data.trips.transportation,
-          eat: data.trips.eat,
-          day: data.trips.day,
-          night: data.trips.night,
-          dateTrip: data.trips.dateTrip,
-          price: data.trips.price,
-          quota: data.trips.quota,
-          description: data.trips.description,
-          image: data.trips.image,
-        },
-      },
+      data,
     });
   } catch (err) {
     res.status(500).send({ error: err }, err);
@@ -198,98 +189,41 @@ exports.updateTransaction = async (req, res) => {
             id: id,
           },
           attributes: {
-            exclude: ["createdAt", "updatedAt"],
+            exclude: ["tripId", "userId", "createdAt", "updatedAt"],
           },
-          include: {
-            model: trip,
-            as: "trips",
-            attributes: {
-              exclude: ["createdAt", "updatedAt"],
-            },
-            include: {
-              model: country,
-              as: "country",
+          include: [
+            {
+              model: trip,
+              as: "trips",
+              include: [
+                {
+                  model: country,
+                  as: "country",
+                  attributes: {
+                    exclude: ["createdAt", "updatedAt"],
+                  },
+                },
+              ],
               attributes: {
-                exclude: ["createdAt", "updatedAt"],
+                exclude: ["countryId", "createdAt", "updatedAt"],
               },
             },
-          },
+            {
+              model: user,
+              as: "users",
+              attributes: {
+                exclude: ["password", "createdAt", "updatedAt"],
+              },
+            },
+          ],
         });
       });
 
     res.status(200).send({
       message: "transaction successfully updated",
-      data: {
-        id: data.id,
-        counterQty: data.counterQty,
-        total: data.total,
-        status: data.status,
-        attachment: data.attachment,
-        trip: {
-          id: data.trips.id,
-          title: data.trips.title,
-          country: data.trips.country,
-          accommodation: data.trips.accommodation,
-          transportation: data.trips.transportation,
-          eat: data.trips.eat,
-          day: data.trips.day,
-          night: data.trips.night,
-          dateTrip: data.trips.dateTrip,
-          price: data.trips.price,
-          quota: data.trips.quota,
-          description: data.trips.description,
-          image: data.trips.image,
-        },
-      },
-    });
-  } catch (err) {
-    res.status(400).send({ error: err }, err);
-  }
-};
-exports.deleteTransaction = async (req, res) => {
-  const id = req.params.id;
-
-  try {
-    const data = await transaction
-      .findOne({
-        where: {
-          id: id,
-        },
-        include: {
-          model: trip,
-          as: "trips",
-          include: {
-            model: country,
-            as: "country",
-            attributes: {
-              exclude: ["createdAt", "updatedAt"],
-            },
-          },
-          attributes: {
-            exclude: ["createdAt", "updatedAt"],
-          },
-        },
-        attributes: {
-          exclude: ["createdAt", "updatedAt"],
-        },
-      })
-      .then((result) => {
-        return transaction
-          .destroy({
-            where: {
-              id: id,
-            },
-          })
-          .then((u) => {
-            return result;
-          });
-      });
-
-    res.status(200).send({
-      message: "transaction successfully deleted",
       data,
     });
   } catch (err) {
-    res.status(400).send({ error: err }, err);
+    res.status(500).send({ error: err }, err);
   }
 };

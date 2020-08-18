@@ -1,4 +1,5 @@
 const { country } = require("../models");
+const { countryValidator } = require("../middleware/validation");
 
 exports.readAllCountry = async (req, res) => {
   try {
@@ -20,7 +21,7 @@ exports.readAllCountry = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(400).send({ error: err }, err);
+    res.status(500).send({ error: err }, err);
   }
 };
 exports.readCountry = async (req, res) => {
@@ -46,11 +47,14 @@ exports.readCountry = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(400).send({ error: err }, err);
+    res.status(500).send({ error: err }, err);
   }
 };
 exports.createCountry = async (req, res) => {
   try {
+    const { error } = countryValidator(req.body);
+    if (error) return res.status(400).send({ error: error.details[0].message });
+
     const countryExist = await country.findOne({
       where: { name: req.body.name },
     });
@@ -71,7 +75,7 @@ exports.createCountry = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(400).send({ error: err }, err);
+    res.status(500).send({ error: err }, err);
   }
 };
 exports.updateCountry = async (req, res) => {
@@ -105,39 +109,35 @@ exports.updateCountry = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(400).send({ error: err }, err);
+    res.status(500).send({ error: err }, err);
   }
 };
 exports.deleteCountry = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const deletecountry = await country
-      .findOne({
-        where: {
-          id: id,
-        },
-      })
-      .then((result) => {
-        return country
-          .destroy({
-            where: {
-              id: id,
-            },
-          })
-          .then((u) => {
-            return result;
-          });
-      });
-
-    res.status(200).send({
-      message: "country successfully updated",
-      data: {
-        id: deletecountry.id,
-        name: deletecountry.name,
+    const country = await country.findOne({
+      where: {
+        id: id,
       },
     });
+
+    if (!country) {
+      res.status(400).send({
+        message: `country not found`,
+      });
+    }
+
+    await country.destroy({
+      where: {
+        id: id,
+      },
+    });
+
+    res.status(200).send({
+      message: "country successfully deleted",
+    });
   } catch (err) {
-    res.status(400).send({ error: err }, err);
+    res.status(500).send({ error: err }, err);
   }
 };
