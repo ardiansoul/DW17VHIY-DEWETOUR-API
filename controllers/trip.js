@@ -1,9 +1,15 @@
 const { country, trip } = require("../models");
 const { tripValidator } = require("../middleware/validation");
+const { Op } = require("sequelize");
 
 exports.readAllTrip = async (req, res) => {
   try {
     const data = await trip.findAll({
+      where: req.query.query && {
+        title: {
+          [Op.like]: "%" + req.query.query + "%",
+        },
+      },
       include: {
         model: country,
         as: "country",
@@ -64,6 +70,15 @@ exports.readTrip = async (req, res) => {
 };
 exports.createTrip = async (req, res) => {
   try {
+    let files = "";
+    console.log(req.files);
+    if (req.files) {
+      req.files.forEach((file) => {
+        files += `${file.path},`;
+      });
+      req.body.image = files;
+      console.log(req.files);
+    }
     const { error } = tripValidator(req.body);
     if (error) return res.status(400).send({ error: error.details[0].message });
 
@@ -76,59 +91,30 @@ exports.createTrip = async (req, res) => {
         message: "trip already exists",
       });
 
-    const {
-      title,
-      countryId,
-      accommodation,
-      transportation,
-      eat,
-      day,
-      night,
-      dateTrip,
-      price,
-      quota,
-      description,
-      image,
-    } = req.body;
-    const data = await trip
-      .create({
-        title,
-        countryId,
-        accommodation,
-        transportation,
-        eat,
-        day,
-        night,
-        dateTrip,
-        price,
-        quota,
-        description,
-        image,
-      })
-      .then(() => {
-        trip.findOne({
-          where: {
-            id: data.id,
-          },
-          include: {
-            model: country,
-            as: "country",
-            attributes: {
-              exclude: ["createdAt", "updatedAt"],
-            },
-          },
+    const data = await trip.create(req.body).then((result) => {
+      trip.findOne({
+        where: {
+          id: result.id,
+        },
+        include: {
+          model: country,
+          as: "country",
           attributes: {
-            exclude: ["countryId", "createdAt", "updatedAt"],
+            exclude: ["createdAt", "updatedAt"],
           },
-        });
+        },
+        attributes: {
+          exclude: ["countryId", "createdAt", "updatedAt"],
+        },
       });
+    });
 
     res.status(201).send({
       message: "trip successfully created",
       data,
     });
   } catch (err) {
-    res.status(500).send({ error: err }, err);
+    res.status(500).send(err);
   }
 };
 exports.updateTrip = async (req, res) => {

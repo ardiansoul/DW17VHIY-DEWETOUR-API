@@ -2,8 +2,11 @@ const express = require("express");
 
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
+const cors = require("cors");
 
 const app = express();
+
+app.use(cors());
 
 dotenv.config();
 // initial db
@@ -12,6 +15,9 @@ dotenv.config();
 //   console.log("sequelize db sync");
 // });
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use("/upload", express.static("upload"));
 
 // Router
 const loginRouter = require("./routes/loginRouter");

@@ -16,9 +16,7 @@ exports.readAllCountry = async (req, res) => {
 
     res.status(200).send({
       message: "countries successfully loaded",
-      data: {
-        countries,
-      },
+      data: countries,
     });
   } catch (err) {
     res.status(500).send({ error: err }, err);

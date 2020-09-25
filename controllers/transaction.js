@@ -33,10 +33,6 @@ exports.readAllTransaction = async (req, res) => {
         },
       ],
     });
-    if (data == 0)
-      return res.status(400).send({
-        message: "transaction is not exist",
-      });
 
     res.status(200).send({
       message: "Transaction successfully loaded",
@@ -61,7 +57,7 @@ exports.readTransaction = async (req, res) => {
         id: id,
       },
       attributes: {
-        exclude: ["tripId", "userId", "createdAt", "updatedAt"],
+        exclude: ["tripId", "userId", "updatedAt"],
       },
       include: [
         {
@@ -108,81 +104,62 @@ exports.createTransaction = async (req, res) => {
     const { error } = transactionValidator(req.body);
     if (error) return res.status(400).send({ error: error.details[0].message });
 
-    const { counterQty, total, status, attachment, tripId, userId } = req.body;
-
-    const data = await transaction
-      .create({
-        counterQty,
-        total,
-        status,
-        attachment,
-        tripId,
-        userId,
-      })
-      .then((result) => {
-        return transaction.findOne({
-          where: {
-            id: result.id,
-          },
-          include: [
-            {
-              model: trip,
-              as: "trips",
-              include: [
-                {
-                  model: country,
-                  as: "country",
-                  attributes: {
-                    exclude: ["createdAt", "updatedAt"],
-                  },
+    const data = await transaction.create(req.body).then((result) => {
+      return transaction.findOne({
+        where: {
+          id: result.id,
+        },
+        include: [
+          {
+            model: trip,
+            as: "trips",
+            include: [
+              {
+                model: country,
+                as: "country",
+                attributes: {
+                  exclude: ["createdAt", "updatedAt"],
                 },
-              ],
-              attributes: {
-                exclude: ["countryId", "createdAt", "updatedAt"],
               },
+            ],
+            attributes: {
+              exclude: ["countryId", "createdAt", "updatedAt"],
             },
-            {
-              model: user,
-              as: "users",
-              attributes: {
-                exclude: ["password", "createdAt", "updatedAt"],
-              },
-            },
-          ],
-          attributes: {
-            exclude: ["tripId", "userId", "createdAt", "updatedAt"],
           },
-        });
+          {
+            model: user,
+            as: "users",
+            attributes: {
+              exclude: ["password", "createdAt", "updatedAt"],
+            },
+          },
+        ],
+        attributes: {
+          exclude: ["tripId", "userId", "createdAt", "updatedAt"],
+        },
       });
+    });
 
     res.status(201).send({
       message: "transaction successfully created",
       data,
     });
   } catch (err) {
-    res.status(500).send({ error: err }, err);
+    res.status(500).send({ error: err.message });
   }
 };
 exports.updateTransaction = async (req, res) => {
+  if (req.file) req.body.attachment = req.file.path;
+  console.log(req.body);
+  console.log(req.file);
   const id = req.params.id;
   try {
-    const { counterQty, total, status, attachment, tripId } = req.body;
-
     const data = await transaction
-      .update(
-        {
-          counterQty,
-          total,
-          status,
-          attachment,
-          tripId,
+      .update(req.body, {
+        where: {
+          id: id,
         },
-        {
-          where: {
-            id: id,
-          },
-        }
-      )
+      })
       .then(() => {
         return transaction.findOne({
           where: {
@@ -224,6 +201,6 @@ exports.updateTransaction = async (req, res) => {
       data,
     });
   } catch (err) {
-    res.status(500).send({ error: err }, err);
+    res.status(500).send({ error: err.message });
   }
 };
