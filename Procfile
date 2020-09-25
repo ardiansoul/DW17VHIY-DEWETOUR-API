@@ -1,1 +1,1 @@
-web: npx sequelize-cli db:migrate;node server.js;
+web: npx sequelize db:migrate:all && node server.js
