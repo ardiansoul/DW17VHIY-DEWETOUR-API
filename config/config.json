@@ -16,8 +16,8 @@
   "production": {
     "username": "root",
     "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "database": "DeweTour",
+    "host": "postgres://kdxsdzueaczaqd:5130a23c15c6f15e3c83683894cb0ea61cf801b2c164e48a38ef45dfc73f2c9a@ec2-52-21-247-176.compute-1.amazonaws.com:5432/d1rs9igihp9ieg",
+    "dialect": "postgres"
   }
 }
