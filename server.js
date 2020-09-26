@@ -1,14 +1,14 @@
 const express = require("express");
 
 const bodyParser = require("body-parser");
-const dotenv = require("dotenv");
+// const dotenv = require("dotenv");
 const cors = require("cors");
 
 const app = express();
 
 app.use(cors());
 
-dotenv.config();
+// dotenv.config();
 // initial db
 // const db = require("./models/");
 // db.sequelize.sync({ force: true }).then(() => {
