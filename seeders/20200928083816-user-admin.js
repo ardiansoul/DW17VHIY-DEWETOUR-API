@@ -9,7 +9,7 @@ module.exports = {
         email: "yanaardi523@gmail.com",
         password:
           "$2a$10$b.ri7S6GtPj8RvFS/bNiKewsoC9SZBfPo2qmLEwZYnYnrPKR6aYBG",
-        phone: +62895369569314,
+        phone: 62895369569314,
         address: "Jalan Panjang untuk kita berdua",
         role: "admin",
         image: NULL,
