@@ -12,7 +12,7 @@ module.exports = {
         phone: 62895369569314,
         address: "Jalan Panjang untuk kita berdua",
         role: "admin",
-        image: NULL,
+        image: "image",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
