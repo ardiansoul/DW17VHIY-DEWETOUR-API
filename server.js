@@ -10,10 +10,10 @@ app.use(cors());
 
 // dotenv.config();
 // initial db
-const db = require("./models/");
-db.sequelize.sync({ force: true }).then(() => {
-  console.log("sequelize db sync");
-});
+// const db = require("./models/");
+// db.sequelize.sync({ force: true }).then(() => {
+//   console.log("sequelize db sync");
+// });
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
